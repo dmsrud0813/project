@@ -19,6 +19,14 @@ def show_games():
 
     return jsonify({'result': 'success', 'game_list': games})
 
+
+@app.route('/api/zzim', methods=['GET'])
+def zzim_games():
+    zzim_games = list(db.boardGameDB.find({'like':1},{'_id':False}))
+
+    return jsonify({'result': 'success', 'zzim_list': zzim_games})
+
+
 @app.route('/api/like', methods=['POST'])
 def like_game():
     title = request.form['title']

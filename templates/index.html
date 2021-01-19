@@ -40,8 +40,9 @@
         $(document).ready(function () {
             // index.html 로드가 완료되면 자동으로 showStar() 함수를 호출합니다.
             showGame();
-
+            heart()
         });
+
 
         function game_like(title) {
             $.ajax({
@@ -50,15 +51,15 @@
                 data: {'title': title},
                 success: function (response) {
                     if (response['result'] == 'success') {
-                        $('#game_like').empty();
-                        if ($('#game_like').val = 0) {
-                            $('#game_like').append('🤍️')
-                        } else {
-                            $('#game_like').append('❤️️')
-                        }
                         let msg = response['msg'];
                         alert(msg);
                         location.reload()
+                        if ($('#heart').val() == 1) {
+                            $('#heart').text('❤️')
+                        } else {
+                            $('#heart').text('🤍')
+                        }
+
                     }
                 }
             });
@@ -81,7 +82,7 @@
                         let like = games[i]['like']
                         let play_time = games[i]['playtime']
                         let tempHtml = `<div class="card" style="width: 18rem;">
-            <button onclick = "game_like('${title}')" id="game_like" style="background-color: #ffffff; margin-left: 221px; font-size: 20px; width: 60px; border: 0px;text-align: right; padding: 0;" value=${like}>🤍</button>
+            <button onclick = "game_like('${title}'), heart('${title}')" id="game_like" style="background-color: #ffffff; margin-left: 221px; font-size: 20px; width: 60px; border: 0px;text-align: right; padding: 0;" value=${like}>🤍</button>
             <img src="${img}" class="card-img-top"
                  alt="..." style="margin: 15px 0 0 0">
             <div class="card-body">
@@ -115,6 +116,63 @@
                 }
             });
         }
+
+
+        function zzim() {
+            if ($("#zzim").text() == "찜 목록") {
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/zzim',
+                    data: {},
+                    success: function (response) {
+                        $('#game_box').empty()
+                        let games = response['zzim_list']
+                        for (let i = 0; i < games.length; i++) {
+                            let title = games[i]['title']
+                            let img = games[i]['img_url']
+                            let category = games[i]['category']
+                            let player = games[i]['player']
+                            let like = games[i]['like']
+                            let play_time = games[i]['playtime']
+                            let tempHtml = `<div class="card" style="width: 18rem;">
+            <button onclick = "game_like('${title}'), heart('${title}')" id="game_like" style="background-color: #ffffff; margin-left: 221px; font-size: 20px; width: 60px; border: 0px;text-align: right; padding: 0;" value=${like}>🤍</button>
+            <img src="${img}" class="card-img-top"
+                 alt="..." style="margin: 15px 0 0 0">
+            <div class="card-body">
+                <h5 class="card-title"
+                    style="text-align: center; background-color: lightgray; padding: 10px; margin: 0px;">${title}</h5>
+            </div>
+            <div class="container" style="text-align: center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6 col-sm-6">카테고리</div>
+                        <div class="col-6 col-sm-6">${category}</div>
+                        <div class="w-100"></div>
+                        <div class="col-6 col-sm-6">플레이 인원</div>
+                        <div class="col-6 col-sm-6">${player}</div>
+                        <div class="w-100"></div>
+                        <div class="col-6 col-sm-6">플레이 시간</div>
+                        <div class="col-6 col-sm-6">${play_time}</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>`
+                            $('#game_box').append(tempHtml)
+                            $('#zzim').text('전체보기')
+
+
+                        }
+                    }
+                });
+            } else {
+                location.reload()
+            }
+        }
+
     </script>
 
 </head>
@@ -160,9 +218,11 @@
                         <option value="puzzle">퍼즐</option>
                     </select>
                 </div>
-
             </div>
         </form>
+        <div>
+            <button id="zzim" onclick="zzim()">찜 목록</button>
+        </div>
     </div>
     <div id="game_box" class="card-columns">
     </div>
